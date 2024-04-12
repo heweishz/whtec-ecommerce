@@ -1,0 +1,24 @@
+.websitePayment {
+  display: none;
+}
+@media screen and (min-width: 480px) {
+  .websitePayment {
+    display: block;
+  }
+}
+.mobilePayment {
+  display: none;
+}
+@media screen and (max-width: 1000px) {
+  .mobilePayment {
+    display: block;
+  }
+}
+.orderNumber {
+  display: block;
+}
+@media screen and (max-width: 600px) {
+  .orderNumber {
+    display: none;
+  }
+}
