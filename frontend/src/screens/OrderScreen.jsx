@@ -40,7 +40,7 @@ const OrderScreen = () => {
     isLoading,
     error,
   } = useGetOrderDetailsQuery(orderId);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
   const [payOrderMobile, { isLoading: loadingPayMobile }] =
     usePayOrderMobileMutation();
@@ -63,6 +63,37 @@ const OrderScreen = () => {
   // useEffect(() => {
   //   navigate('/');
   // }, []);
+  let url = encodeURIComponent(window.location.href.split('#')[0]);
+  const wechatConfig = async () => {
+    await axios.get(`https://gzh.whtec.net/jsapi?url=${url}`).then((result) => {
+      //let { appid, timestamp, noncestr, signature } = result.data;
+      wx.config({
+        debug: false,
+        ...result.data,
+        jsApiList: [
+          'scanQRCode',
+          // 'onMenuShareTimeline',
+          // 'onMenuShareQQ',
+          // 'startRecord',
+          // 'stopRecord',
+          // 'translateVoice',
+        ],
+      });
+      wx.ready(function () {
+        wx.checkJsApi({
+          jsApiList: ['scanQRCode'],
+          success: function (res) {
+            //render alipay or not
+            localStorage.setItem('wxConfig', 'true');
+          },
+        });
+      });
+      wx.error(function (res) {
+        // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+        console.log(res, '<<if wx.config ERR');
+      });
+    });
+  };
   useEffect(() => {
     setMatchCode(promotionCodes.find((promotionCode) => code == promotionCode));
     if (!errorPayPal && !loadingPayPal && paypal.clientId) {
@@ -82,15 +113,22 @@ const OrderScreen = () => {
         }
       }
     }
-    wx.checkJsApi({
-      jsApiList: ['scanQRCode'],
-      success: function (res) {
-        //render alipay or not
-        setShowOrHide(false);
-      },
+    wx.ready(function () {
+      wx.checkJsApi({
+        jsApiList: ['scanQRCode'],
+        success: function (res) {
+          //render alipay or not
+          setShowOrHide(false);
+        },
+      });
     });
-
-    //wechatConfig();
+    let surfModel = navigator.userAgent;
+    if (surfModel.toLowerCase().match(/micromessenger/i) == 'micromessenger') {
+      if (!localStorage.getItem('wxConfig')) {
+        console.log(!localStorage.getItem('wxConfig'), '<<orderScreen');
+        wechatConfig();
+      }
+    }
   }, [code, errorPayPal, loadingPayPal, order, paypal, paypalDispatch]);
 
   async function alipay() {
@@ -206,12 +244,19 @@ const OrderScreen = () => {
         return orderID;
       });
   }
+  async function sendNavigator(signal) {
+    await axios.post('/api/users/sendNavigator', {
+      environment: `${navigator.userAgent}--${Date.now()}--${signal}`,
+    });
+  }
   const scanCode = () => {
+    sendNavigator('scanCode');
     wx.scanQRCode({
       needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
       scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
       success: async function (res) {
         var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+        sendNavigator(result);
         await axios.get(
           `/api/payment/testEmptyObject?auth_code=${result}&orderId=${order._id}`
         );

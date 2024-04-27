@@ -38,10 +38,11 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
     await axios.get(`https://gzh.whtec.net/jsapi?url=${url}`).then((result) => {
       //let { appid, timestamp, noncestr, signature } = result.data;
       wx.config({
-        debug: false,
+        debug: true,
         ...result.data,
         jsApiList: [
           'scanQRCode',
+          'updateTimelineShareData',
           // 'onMenuShareTimeline',
           // 'onMenuShareQQ',
           // 'startRecord',
@@ -52,6 +53,8 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
       wx.ready(function () {
         wx.checkJsApi({
           jsApiList: [
+            'scanQRCode',
+            'updateTimelineShareData',
             // 'onMenuShareTimeline',
             // 'onMenuShareQQ',
             // 'startRecord',
@@ -64,15 +67,15 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
             // alert(navigator.userAgent.indexOf('Android'));
           },
         });
-        // wx.updateTimelineShareData({
-        //   title: '商城', // 分享标题
-        //   link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-        //   imgUrl: 'https://buyifang.whtec.net/uploads/image-1710658881842.jpg', // 分享图标
-        //   success: function () {
-        //     console.log('设置成功');
-        //     // 设置成功
-        //   },
-        // });
+        wx.updateTimelineShareData({
+          title: '商城', // 分享标题
+          link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl: 'https://buyifang.whtec.net/uploads/image-1710658881842.jpg', // 分享图标
+          success: function () {
+            console.log('设置成功');
+            // 设置成功
+          },
+        });
         // wx.updateAppMessageShareData({
         //   title: '商城', // 分享标题
         //   desc: 'have a try', // 分享描述
@@ -120,7 +123,7 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
       scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
       success: async function (res) {
         var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-        // alert(result);
+        alert(result);
         await axios.get(`/api/payment/testEmptyObject?auth_code=${result}`);
       },
     });
@@ -279,6 +282,7 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
   useEffect(() => {
     let surfModel = navigator.userAgent;
     if (surfModel.toLowerCase().match(/micromessenger/i) == 'micromessenger') {
+      // wechatConfig();
       async function middleWare() {
         wechatUser = await getWechatUser();
       }

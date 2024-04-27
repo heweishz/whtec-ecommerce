@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useRef } from 'react';
+import PannellumScreen from '../components/PannellumScreen';
 
 const Product = ({ product }) => {
   const gsapRef = useRef(null);
@@ -31,18 +32,23 @@ const Product = ({ product }) => {
       ease: 'bounce.in',
     });
   }, []);
+  const redirectToProduct = () => {
+    // Manually redirect using window.location.href
+    window.location.href = `/product/${product._id}`;
+  };
   return (
     <Card className='my-3 p-3 rounded '>
-      <Link to={`/product/${product._id}`}>
-        <Card.Img src={product.image} variant='top' />
-      </Link>
+      <Card.Img src={product.image} variant='top' onClick={redirectToProduct} />
+      {/* <PannellumScreen image={product.image} /> */}
 
       <Card.Body>
-        <Link to={`/product/${product._id}`}>
-          <Card.Title as='div' className='product-title'>
-            <strong>{product.name}</strong>
-          </Card.Title>
-        </Link>
+        <Card.Title
+          as='div'
+          className='product-title'
+          onClick={redirectToProduct}
+        >
+          <strong>{product.name}</strong>
+        </Card.Title>
 
         {/* <Card.Text as='div'>
           <Rating

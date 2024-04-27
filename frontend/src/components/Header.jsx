@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
-  const [switchLanguageSignal, setSwitchLanguageSignal] = useState(true);
+  // const [switchLanguageSignal, setSwitchLanguageSignal] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -45,14 +45,14 @@ const Header = () => {
     localStorage.setItem('language', 'cn');
   }, []);
   const language = localStorage.getItem('language');
-  const switchLanguage = () => {
-    setSwitchLanguageSignal((prev) => !prev);
-    if (language === 'en') {
-      localStorage.setItem('language', 'cn');
-    } else if (language === 'cn') {
-      localStorage.setItem('language', 'en');
-    }
-  };
+  // const switchLanguage = () => {
+  //   setSwitchLanguageSignal((prev) => !prev);
+  //   if (language === 'en') {
+  //     localStorage.setItem('language', 'cn');
+  //   } else if (language === 'cn') {
+  //     localStorage.setItem('language', 'en');
+  //   }
+  // };
   return (
     <header>
       <Navbar bg='primary' variant='dark' expand='lg' collapseOnSelect>
@@ -78,7 +78,7 @@ const Header = () => {
               )}
             </Nav.Link>
           </LinkContainer>
-          <Button onClick={switchLanguage}>switch language</Button>
+          {/* <Button onClick={switchLanguage}>switch language</Button> */}
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
             <Nav className='ms-auto'>

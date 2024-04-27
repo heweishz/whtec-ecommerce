@@ -21,16 +21,16 @@ const deleteImage = asyncHandler(async (req, res) => {
           // res.json({ message: 'Original product image removed' });
         }
       });
-      let originalImg = product.image.replace('comp', '');
-      fs.unlink(path.join(__dirname + originalImg), (err) => {
-        if (err) {
-          console.log(err.message);
-          // res.status(404).json(new Error('Unable to delete original image'));
-        } else {
-          // res.json({ message: 'Original product image removed' });
-        }
-      });
-      res.json({ message: 'Original product imag' });
+      // let originalImg = product.image.replace('comp', '');
+      // fs.unlink(path.join(__dirname + originalImg), (err) => {
+      //   if (err) {
+      //     console.log(err.message);
+      //     // res.status(404).json(new Error('Unable to delete original image'));
+      //   } else {
+      //     // res.json({ message: 'Original product image removed' });
+      //   }
+      // });
+      res.json({ message: 'Original product image delete' });
     } else res.json({ message: 'no need to delete sample image' });
 
     // fs.unlink(path.join(__dirname + product.image), (err) => {

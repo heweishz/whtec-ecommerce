@@ -106,7 +106,7 @@ const HomeScreen = () => {
         </Message>
       ) : (
         <>
-          <Meta title='米兰坊' />
+          <Meta title='布衣坊' />
           <h1>
             {process.env.REACT_APP_CHINESE ? '最新商品' : 'Latest Products'}
           </h1>

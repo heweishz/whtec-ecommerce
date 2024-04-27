@@ -1,6 +1,6 @@
 import path from 'path';
 import multer from 'multer';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 import asyncHandler from '../middleware/asyncHandler.js';
 // @desc    Update main product image
 // @route   POST /api/upload
@@ -39,20 +39,20 @@ const uploadSingleImageController = asyncHandler((req, res) => {
     if (err) {
       return res.status(400).send({ message: err.message });
     }
-    sharp(req.file.path)
-      .resize(640, 480, { fit: 'contain' })
-      .jpeg({
-        quality: 80,
-        chromaSubsampling: '4:4:4',
-      })
-      .toFile(
-        `${req.file.destination}comp${req.file.filename}`,
-        (err, info) => {}
-      );
+    // sharp(req.file.path)
+    //   .resize(640, 480, { fit: 'contain' })
+    //   .jpeg({
+    //     quality: 80,
+    //     chromaSubsampling: '4:4:4',
+    //   })
+    //   .toFile(
+    //     `${req.file.destination}comp${req.file.filename}`,
+    //     (err, info) => {}
+    //   );
 
     res.status(200).send({
       message: 'Image uploaded successfully',
-      image: `/${req.file.destination}comp${req.file.filename}`,
+      image: `/${req.file.destination}${req.file.filename}`,
     });
   });
 });

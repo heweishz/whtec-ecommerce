@@ -4,16 +4,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import FormContainer from '../components/FormContainer';
 import CheckoutSteps from '../components/CheckoutSteps';
-import { saveShippingAddress } from '../slices/cartSlice';
+import {
+  resetCart,
+  clearCartItems,
+  saveShippingAddress,
+} from '../slices/cartSlice';
 import { savePaymentMethod } from '../slices/cartSlice';
 import { useCreateOrderMutation } from '../slices/ordersApiSlice';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 const ShippingScreen = () => {
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
 
-  const [address, setAddress] = useState(shippingAddress.address || '忽略');
+  const [address, setAddress] = useState(shippingAddress.address || '建议留');
   const [city, setCity] = useState(shippingAddress.city || '忽略');
   const [postalCode, setPostalCode] = useState(
     shippingAddress.postalCode || '忽略'
@@ -23,30 +28,42 @@ const ShippingScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const placeOrderHandler = async () => {
+    let cartEdited = JSON.parse(localStorage.getItem('cart'));
     try {
       const res = await createOrder({
-        orderItems: cart.cartItems,
-        shippingAddress: cart.shippingAddress,
-        paymentMethod: cart.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice,
+        orderItems: cartEdited.cartItems,
+        shippingAddress: cartEdited.shippingAddress,
+        paymentMethod: cartEdited.paymentMethod,
+        itemsPrice: cartEdited.itemsPrice,
+        shippingPrice: cartEdited.shippingPrice,
+        taxPrice: cartEdited.taxPrice,
+        totalPrice: cartEdited.totalPrice,
         tableNumber: localStorage.getItem('tableNumber'),
       }).unwrap();
-      // dispatch(clearCartItems());
+      dispatch(resetCart());
+      dispatch(clearCartItems());
+      // if (res.shippingAddress?.address) {
+      //   navigate(`/order/${res._id}`);
+      // }
       setTimeout(navigate(`/order/${res._id}`), [300]);
     } catch (err) {
       toast.error(err);
     }
   };
+  const sendNavigator = async (signal) => {
+    await axios.post('/api/users/sendNavigator', {
+      environment: `${navigator.userAgent}--${signal}`,
+    });
+  };
   const submitHandler = (e) => {
     e.preventDefault();
+    sendNavigator(address);
     dispatch(
       saveShippingAddress({ address, city, postalCode, country, phone })
     );
     dispatch(savePaymentMethod('uncertain'));
     placeOrderHandler();
+
     // navigate('/placeorder');
   };
 

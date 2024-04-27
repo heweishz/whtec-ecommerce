@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,6 +26,10 @@ import ModalPromotion from '../components/ModalPromotion';
 import cart from '../assets/cart.svg';
 import { addOneToCart } from '../slices/cartSlice';
 import gsap from 'gsap';
+import wx from 'weixin-js-sdk';
+import axios from 'axios';
+import PannellumScreen from '../components/PannellumScreen';
+
 const ProductScreen = () => {
   const { id: productId } = useParams();
   const gsapRef = useRef(null);
@@ -76,7 +80,94 @@ const ProductScreen = () => {
       toast.error(err?.data?.message || err.error);
     }
   };
-
+  const sendNavigator = async (signal) => {
+    await axios.post('/api/users/sendNavigator', {
+      environment: `${navigator.userAgent}--${Date.now()}--${signal}`,
+    });
+  };
+  let url = encodeURIComponent(window.location.href.split('#')[0]);
+  const wechatConfig = async () => {
+    await axios.get(`https://gzh.whtec.net/jsapi?url=${url}`).then((result) => {
+      //let { appid, timestamp, noncestr, signature } = result.data;
+      wx.config({
+        debug: false,
+        ...result.data,
+        jsApiList: [
+          'scanQRCode',
+          'updateTimelineShareData',
+          'updateAppMessageShareData',
+          // 'onMenuShareTimeline',
+          // 'onMenuShareQQ',
+          // 'startRecord',
+          // 'stopRecord',
+          // 'translateVoice',
+        ],
+      });
+      wx.ready(function () {
+        wx.checkJsApi({
+          jsApiList: [
+            'updateTimelineShareData',
+            'updateAppMessageShareData',
+            // 'onMenuShareTimeline',
+            // 'onMenuShareQQ',
+            // 'startRecord',
+            // 'stopRecord',
+            // 'translateVoice',
+          ],
+          success: function (res) {
+            // console.log('checkJsApi success');
+            // console.log(navigator.userAgent, 'getSysteminfoSync');
+            // alert(navigator.userAgent.indexOf('Android'));
+            localStorage.setItem('wxConfig', 'true');
+            sendNavigator('checkJsApi');
+          },
+        });
+        wx.updateTimelineShareData({
+          title: product.name, // 分享标题
+          link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl: `${window.location.origin}${product.imageDesc[0]}`, // 分享图标
+          success: function () {
+            // sendNavigator(`${window.location.origin}${product.image}`);
+            // 设置成功
+          },
+        });
+        wx.updateAppMessageShareData({
+          title: product.name, // 分享标题
+          desc: product.description,
+          link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl: `${window.location.origin}${product.imageDesc[0]}`, // 分享图标
+          success: function () {
+            // sendNavigator('messageShare');
+            // 设置成功
+          },
+        });
+        // wx.updateAppMessageShareData({
+        //   title: '商城', // 分享标题
+        //   desc: 'have a try', // 分享描述
+        //   link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+        //   imgUrl: 'https://buyifang.whtec.net/uploads/image-1710658881842.jpg', // 分享图标
+        //   success: function () {
+        //     // 设置成功
+        //   },
+        // });
+      });
+      wx.error(function (res) {
+        // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+        console.log(res, '<<if wx.config ERR');
+      });
+    });
+  };
+  useEffect(() => {
+    let surfModel = navigator.userAgent;
+    if (surfModel.toLowerCase().match(/micromessenger/i) == 'micromessenger') {
+      if (!isLoading) {
+        if (!localStorage.getItem('wxConfig')) {
+          console.log(!localStorage.getItem('wxConfig'), '<<productScreen');
+          wechatConfig();
+        }
+      }
+    }
+  }, [isLoading]);
   return (
     <>
       <Link className='btn btn-light my-3' to='/'>
@@ -94,6 +185,7 @@ const ProductScreen = () => {
           <Row>
             <Col md={6}>
               <Image src={product.image} alt={product.name} fluid />
+              {/* <PannellumScreen image={product.image} /> */}
             </Col>
             <Col md={3}>
               <ListGroup variant='flush'>
