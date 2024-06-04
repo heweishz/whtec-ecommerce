@@ -35,6 +35,7 @@ const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single('image');
 
 const uploadSingleImageController = asyncHandler((req, res) => {
+  let returnValue;
   uploadSingleImage(req, res, function (err) {
     if (err) {
       return res.status(400).send({ message: err.message });
@@ -49,11 +50,11 @@ const uploadSingleImageController = asyncHandler((req, res) => {
     //     `${req.file.destination}comp${req.file.filename}`,
     //     (err, info) => {}
     //   );
-
-    res.status(200).send({
+    returnValue = {
       message: 'Image uploaded successfully',
       image: `/${req.file.destination}${req.file.filename}`,
-    });
+    };
+    res.status(200).send(returnValue);
   });
 });
 

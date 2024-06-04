@@ -15,6 +15,7 @@ import {
 import { setCredentials } from '../slices/authSlice';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const NavbarCategory = ({ pages, page, keyword = '' }) => {
   let url = encodeURIComponent(window.location.href.split('#')[0]);
@@ -33,7 +34,6 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
     localStorage.setItem('tableNumber', tableNumber);
   }
   const codeAli = locationURL.get('auth_code');
-  let wechatUser;
   const wechatConfig = async () => {
     await axios.get(`https://gzh.whtec.net/jsapi?url=${url}`).then((result) => {
       //let { appid, timestamp, noncestr, signature } = result.data;
@@ -141,6 +141,7 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
     window.location.href = result.data;
   };
 
+  let wechatUser;
   const getWechatUser = async () => {
     if (!codeWechat) {
       await getBaseCode();
@@ -279,14 +280,18 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
       environment: navigator.userAgent,
     });
   };
+  const navigate = useNavigate();
+  const tableGame = async () => {
+    navigate(`/tableGame`);
+  };
   useEffect(() => {
     let surfModel = navigator.userAgent;
     if (surfModel.toLowerCase().match(/micromessenger/i) == 'micromessenger') {
       // wechatConfig();
-      async function middleWare() {
-        wechatUser = await getWechatUser();
-      }
       if (!userInfo) {
+        async function middleWare() {
+          wechatUser = await getWechatUser();
+        }
         middleWare();
       }
     } else if (surfModel.toLowerCase().match(/alipay/i) == 'alipay') {
@@ -319,7 +324,7 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
     //     console.log(err);
     //   },
     // });
-  }, [userInfo, codeAli]);
+  }, [userInfo]);
   return isLoading ? (
     <Loader />
   ) : (
@@ -359,6 +364,9 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
       </Button>
       <Button onClick={sendNavigator} style={{ display: 'none' }}>
         userAgent
+      </Button>
+      <Button onClick={tableGame} style={{ display: 'block' }}>
+        桌游计分
       </Button>
     </Pagination>
   );

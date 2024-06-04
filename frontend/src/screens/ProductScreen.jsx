@@ -125,7 +125,7 @@ const ProductScreen = () => {
         wx.updateTimelineShareData({
           title: product.name, // 分享标题
           link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-          imgUrl: `${window.location.origin}${product.imageDesc[0]}`, // 分享图标
+          imgUrl: `${window.location.origin}${product.image}`, // 分享图标
           success: function () {
             // sendNavigator(`${window.location.origin}${product.image}`);
             // 设置成功
@@ -135,7 +135,7 @@ const ProductScreen = () => {
           title: product.name, // 分享标题
           desc: product.description,
           link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-          imgUrl: `${window.location.origin}${product.imageDesc[0]}`, // 分享图标
+          imgUrl: `${window.location.origin}${product.image}`, // 分享图标
           success: function () {
             // sendNavigator('messageShare');
             // 设置成功
@@ -161,10 +161,7 @@ const ProductScreen = () => {
     let surfModel = navigator.userAgent;
     if (surfModel.toLowerCase().match(/micromessenger/i) == 'micromessenger') {
       if (!isLoading) {
-        if (!localStorage.getItem('wxConfig')) {
-          console.log(!localStorage.getItem('wxConfig'), '<<productScreen');
-          wechatConfig();
-        }
+        wechatConfig();
       }
     }
   }, [isLoading]);
@@ -205,6 +202,11 @@ const ProductScreen = () => {
                       />
                     </Col>
                   </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <span>发布人：</span>
+                  <Image src={product.user.icon} fluid width='30'></Image>
+                  {product.user.name}
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Rating

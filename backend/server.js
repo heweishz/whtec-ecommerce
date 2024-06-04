@@ -13,9 +13,11 @@ import deleteImageRoutes from './routes/deleteImageRoutes.js';
 import uploadMultipleRoutes from './routes/uploadMultipleRoutes.js';
 import updateMultipleImageRoutes from './routes/updateMultipleImageRoutes.js';
 import tiktokRoutes from './routes/tiktokRoutes.js';
+import { Server as SocketIO } from 'socket.io';
 
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
+import configureSocket from './socket.js';
 const port = process.env.PORT || 5000;
 
 connectDB();
@@ -53,7 +55,6 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   const __dirname = path.resolve();
   app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
-  // app.use('/uploads01', express.static(path.join(__dirname, '/uploads01')));
   app.get('/', (req, res) => {
     res.send('API is running....');
   });
@@ -62,6 +63,18 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () =>
+const expressServer = app.listen(port, () =>
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
 );
+const io = new SocketIO(expressServer, {
+  cors: {
+    origin: ['http://localhost:3000', 'https://buyifang.whtec.net'], // Your React app's origin
+    methods: ['GET', 'POST'], // Allowed HTTP methods
+    credentials: true, // If you need to send cookies with the request
+    pingTimeout: 500, // 5 seconds
+    pingInterval: 2000, // 25 seconds
+  },
+});
+
+// const io = new SocketIO(expressServer);
+configureSocket(io);

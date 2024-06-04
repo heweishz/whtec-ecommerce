@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
 import SearchBox from './SearchBox';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo-doll.png';
 import { resetCart } from '../slices/cartSlice';
 import { clearCartItems } from '../slices/cartSlice';
 import { useEffect, useState } from 'react';
@@ -62,9 +62,9 @@ const Header = () => {
               {userInfo ? (
                 <img src={userInfo.icon} alt='ProShop' width='40px' />
               ) : (
-                <img src={logo} alt='ProShop' />
+                <img src={logo} alt='ProShop' width={30} />
               )}
-              布衣坊
+              桅梁科技商城
             </Navbar.Brand>
           </LinkContainer>
           <LinkContainer to='/cart'>

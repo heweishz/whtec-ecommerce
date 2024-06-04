@@ -47,18 +47,18 @@ router.post('/', protect, admin, (req, res) => {
     //   return '/' + file.path;
     // });
     const newFilePath = uploadedFiles.map((file) => {
-      // sharp(file.path)
-      //   .resize(640, 480, { fit: 'contain' })
-      //   .jpeg({
-      //     quality: 100,
-      //     chromaSubsampling: '4:4:4',
-      //   })
-      //   .toFile(`${file.destination}comp${file.filename}`, (err, info) => {
-      //     if (err) {
-      //       console.log(err, '<<err from sharp');
-      //     }
-      //   });
-      return `/${file.destination}${file.filename}`;
+      sharp(file.path)
+        .resize(640, 480, { fit: 'contain' })
+        .jpeg({
+          quality: 100,
+          chromaSubsampling: '4:4:4',
+        })
+        .toFile(`${file.destination}comp${file.filename}`, (err, info) => {
+          if (err) {
+            console.log(err, '<<err from sharp');
+          }
+        });
+      return `/${file.destination}comp${file.filename}`;
     });
 
     res.status(200).send({

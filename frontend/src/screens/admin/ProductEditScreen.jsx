@@ -261,7 +261,7 @@ const ProductEditScreen = () => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='category'>
+            {/* <Form.Group controlId='category'>
               <Form.Label>
                 {process.env.REACT_APP_CHINESE ? '分类' : 'Category'}
               </Form.Label>
@@ -271,6 +271,20 @@ const ProductEditScreen = () => {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               ></Form.Control>
+            </Form.Group> */}
+            <Form.Group controlId='category'>
+              <Form.Label>
+                {process.env.REACT_APP_CHINESE ? '分类' : 'Category'}
+              </Form.Label>
+              <Form.Control
+                as='select'
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value='饮料'>饮料</option>
+                <option value='卤味'>卤味</option>
+                <option value='其它'>其它</option>
+              </Form.Control>
             </Form.Group>
 
             <Form.Group controlId='description'>
@@ -289,7 +303,11 @@ const ProductEditScreen = () => {
               type='submit'
               variant='primary'
               style={{ marginTop: '1rem' }}
-              disabled={loadingUploadMultiple || loadingDeleteImageByAddress}
+              disabled={
+                loadingUpload ||
+                loadingUploadMultiple ||
+                loadingDeleteImageByAddress
+              }
             >
               {process.env.REACT_APP_CHINESE ? '更新' : 'Update'}
             </Button>

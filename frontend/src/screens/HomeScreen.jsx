@@ -1,4 +1,4 @@
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
 import { Link } from 'react-router-dom';
@@ -18,6 +18,9 @@ import NavbarCategory from './NavbarCategory';
 
 import wx from 'weixin-js-sdk';
 import axios from 'axios';
+import PannellumScreen from '../components/PannellumScreen';
+import panorama from '../assets/yizhanConvinence.jpg';
+
 const HomeScreen = () => {
   const language = localStorage.getItem('language');
   const { pageNumber, keyword, category } = useParams();
@@ -32,29 +35,37 @@ const HomeScreen = () => {
   const dispatch = useDispatch();
 
   const wechatConfig = async () => {
+    console.log('wechatConfig inner <<<<<<');
     let url = encodeURIComponent(window.location.href.split('#')[0]);
     await axios.get(`https://gzh.whtec.net/jsapi?url=${url}`).then((result) => {
       //let { appid, timestamp, noncestr, signature } = result.data;
       wx.config({
         debug: false,
         ...result.data,
-        jsApiList: ['updateTimelineShareData'],
+        jsApiList: ['updateTimelineShareData', 'updateAppMessageShareData'],
       });
       wx.ready(function () {
         wx.checkJsApi({
-          jsApiList: ['updateTimelineShareData'],
-          success: function (res) {
-            console.log('homeScreen checkJsApi');
-            wx.updateTimelineShareData({
-              title: '商城', // 分享标题
-              link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl:
-                'https://buyifang.whtec.net/uploads/image-1710658881842.jpg', // 分享图标
-              success: function () {
-                // 设置成功
-                console.log('updateTimeLineShareData set success');
-              },
-            });
+          jsApiList: ['updateTimelineShareData', 'updateAppMessageShareData'],
+          success: function (res) {},
+        });
+        wx.updateTimelineShareData({
+          title: '桅梁科技商城', // 分享标题
+          link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl: 'https://buyifang.whtec.net/images/tableGame.png', // 分享图标
+          success: function () {
+            // 设置成功
+            console.log('updateTimeLineShareData set success');
+          },
+        });
+        wx.updateAppMessageShareData({
+          title: '桅梁科技商城', // 分享标题
+          desc: '桌面游戏',
+          link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl: `${window.location.origin}/images/tableGame.png`, // 分享图标
+          success: function () {
+            // sendNavigator('messageShare');
+            // 设置成功
           },
         });
       });
@@ -73,6 +84,11 @@ const HomeScreen = () => {
     //     wechatConfig();
     //   },
     // });
+    let surfModel = navigator.userAgent;
+    if (surfModel.toLowerCase().match(/micromessenger/i) == 'micromessenger') {
+      console.log('---------debug 01 -------');
+      wechatConfig();
+    }
     if (!userInfo && false) {
       async function autoLogin() {
         try {
@@ -91,8 +107,17 @@ const HomeScreen = () => {
 
   return (
     <>
-      {!keyword ? (
-        <ProductCarousel />
+      {!keyword && !category ? (
+        // <ProductCarousel />
+        <Container>
+          <Row>
+            <Col xs={1}></Col>
+            <Col xs={10}>
+              <PannellumScreen image={panorama} fluid />
+            </Col>
+            <Col xs={1}></Col>
+          </Row>
+        </Container>
       ) : (
         <Link to='/' className='btn btn-light mb-4'>
           {process.env.REACT_APP_CHINESE ? '返回' : 'Go Back'}
@@ -106,7 +131,7 @@ const HomeScreen = () => {
         </Message>
       ) : (
         <>
-          <Meta title='布衣坊' />
+          <Meta title='桅梁科技' />
           <h1>
             {process.env.REACT_APP_CHINESE ? '最新商品' : 'Latest Products'}
           </h1>

@@ -1,0 +1,73 @@
+/* Define animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Apply animation to the clicked user */
+.animated {
+  animation-name: pulse;
+  animation-duration: 1s;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
+  transition: transform 0.2s;
+}
+
+.grid-item:hover {
+  transform: scale(1.05);
+}
+
+.user-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+.score {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.gif-container {
+  text-align: center; /* Center the GIF horizontally */
+}
+
+.gif {
+  width: 80%; /* Set the width to 100% of its container */
+  max-width: 300px; /* Set maximum width to 300px to prevent it from becoming too large on larger screens */
+}
+
+/* Styles for mobile devices */
+@media screen and (max-width: 768px) {
+  .grid-container {
+    flex-direction: column; /* Display users in a single column on mobile */
+    align-items: center; /* Center align items vertically */
+  }
+
+  .grid-container > * {
+    width: 100%; /* Set width to 100% for each user icon */
+    max-width: none; /* Remove max-width constraint */
+  }
+}

@@ -1,11 +1,14 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Product from '../models/productModel.js';
+
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
-const getProducts = asyncHandler(async (req, res) => {
+//  not in use, old getProducts
+const getProducts_old = asyncHandler(async (req, res) => {
   const pageSize = process.env.PAGINATION_LIMIT;
-  const page = Number(req.query.pageNumber) || 1;
+  console.log(req.query, '<<<getProducts query<<<<');
+  const page = Number(req.query.page) || 1;
 
   const keyword = !req.query.category
     ? req.query.keyword
@@ -49,6 +52,12 @@ const getProducts = asyncHandler(async (req, res) => {
 
   res.json({ products, page, pages: Math.ceil(count / pageSize) });
 });
+// @desc    Fetch all products
+// @route   GET /api/products
+// @access  Public
+const getProducts = asyncHandler(async (req, res) => {
+  res.status(200).json(res.advancedResults);
+});
 
 // @desc    Fetch all category
 // @route   GET /api/products/category
@@ -69,7 +78,7 @@ const getCategory = asyncHandler(async (req, res) => {
 const getProductById = asyncHandler(async (req, res) => {
   // NOTE: checking for valid ObjectId to prevent CastError moved to separate
   // middleware. See README for more info.
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate('user');
   if (product) {
     return res.json(product);
   } else {
@@ -90,13 +99,12 @@ const createProduct = asyncHandler(async (req, res) => {
     user: req.user._id,
     image: '/images/sample.jpg',
     imageDesc: [],
-    brand: 'taps',
-    category: '服装',
+    brand: '桅梁科技有限公司',
+    category: '其它',
     countInStock: 999,
     numReviews: 0,
     description: '商口描述',
   });
-
   const createdProduct = await product.save();
   res.status(201).json(createdProduct);
 });

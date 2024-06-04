@@ -49,6 +49,9 @@ const ProfileScreen = () => {
       }
     }
   };
+  const redirectToProduct = (order) => {
+    window.location.href = `/order/${order._id}`;
+  };
 
   return (
     <Row>
@@ -79,7 +82,7 @@ const ProfileScreen = () => {
                     <td>
                       {order.orderItems.map((item) => {
                         return (
-                          <span>
+                          <span key={item._id}>
                             <Image
                               src={item.image}
                               alt={item.name}
@@ -113,11 +116,13 @@ const ProfileScreen = () => {
                       )}
                     </td>
                     <td>
-                      <LinkContainer to={`/order/${order._id}`}>
-                        <Button className='btn-sm' variant='light'>
-                          {process.env.REACT_APP_CHINESE ? '详情' : 'Details'}
-                        </Button>
-                      </LinkContainer>
+                      <Button
+                        onClick={() => redirectToProduct(order)}
+                        className='btn-sm'
+                        variant='light'
+                      >
+                        {process.env.REACT_APP_CHINESE ? '详情' : 'Details'}
+                      </Button>
                     </td>
                   </tr>
                 ))}

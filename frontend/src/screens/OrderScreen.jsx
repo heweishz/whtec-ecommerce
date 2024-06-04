@@ -113,23 +113,21 @@ const OrderScreen = () => {
         }
       }
     }
-    wx.ready(function () {
-      wx.checkJsApi({
-        jsApiList: ['scanQRCode'],
-        success: function (res) {
-          //render alipay or not
-          setShowOrHide(false);
-        },
-      });
-    });
+    // wx.ready(function () {
+    //   wx.checkJsApi({
+    //     jsApiList: ['scanQRCode'],
+    //     success: function (res) {
+    //       //render alipay or not
+
+    //     },
+    //   });
+    // });
     let surfModel = navigator.userAgent;
     if (surfModel.toLowerCase().match(/micromessenger/i) == 'micromessenger') {
-      if (!localStorage.getItem('wxConfig')) {
-        console.log(!localStorage.getItem('wxConfig'), '<<orderScreen');
-        wechatConfig();
-      }
+      setShowOrHide(false);
+      wechatConfig();
     }
-  }, [code, errorPayPal, loadingPayPal, order, paypal, paypalDispatch]);
+  }, [code, order]);
 
   async function alipay() {
     // dispatch(savePaymentMethod('支付宝'));
@@ -180,11 +178,14 @@ const OrderScreen = () => {
           orderId,
           matchCode,
         }).unwrap();
+
       const result = (
         await axios.post('https://gzh.whtec.net/payment/prepay', {
           openid,
           money: total_amount,
-          subject,
+          subject: `${subject} ${
+            order.tableNumber ? order.tableNumber + '号桌' : ''
+          }`,
           out_trade_no,
           hostname: process.env.REACT_APP_HOSTNAME,
           callbackToken,

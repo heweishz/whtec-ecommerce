@@ -20,6 +20,10 @@ const OrderListScreen = () => {
       }
     }
   };
+  const redirectToProduct = (order) => {
+    // Manually redirect using window.location.href
+    window.location.href = `/order/${order._id}`;
+  };
   return (
     <>
       <h1>{process.env.REACT_APP_CHINESE ? '订单' : 'Orders'}</h1>
@@ -33,7 +37,6 @@ const OrderListScreen = () => {
         <Table striped bordered hover responsive className='table-sm' size='sm'>
           <thead>
             <tr>
-              <th>ID</th>
               <th>{process.env.REACT_APP_CHINESE ? '用户' : 'USER'}</th>
               <th>{process.env.REACT_APP_CHINESE ? '日期' : 'DATA'}</th>
               <th>{process.env.REACT_APP_CHINESE ? '总价' : 'TOTAL'}</th>
@@ -46,8 +49,10 @@ const OrderListScreen = () => {
           <tbody>
             {orders.map((order) => (
               <tr key={order._id}>
-                <td>{order._id}</td>
-                <td>{order.user && order.user.name}</td>
+                <td>
+                  {order.user && order.user.name}
+                  {order.tableNumber && `  ${order.tableNumber}号桌`}
+                </td>
                 <td>{order.createdAt}</td>
                 <td>
                   {process.env.REACT_APP_CHINESE ? '¥' : '$'}
@@ -81,11 +86,13 @@ const OrderListScreen = () => {
                   )}
                 </td>
                 <td>
-                  <LinkContainer to={`/order/${order._id}`}>
-                    <Button variant='light' className='btn-sm'>
-                      {process.env.REACT_APP_CHINESE ? '详情' : 'Details'}
-                    </Button>
-                  </LinkContainer>
+                  <Button
+                    onClick={() => redirectToProduct(order)}
+                    variant='light'
+                    className='btn-sm'
+                  >
+                    {process.env.REACT_APP_CHINESE ? '详情' : 'Details'}
+                  </Button>
                 </td>
               </tr>
             ))}

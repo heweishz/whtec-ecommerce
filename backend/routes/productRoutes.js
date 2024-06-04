@@ -12,8 +12,13 @@ import {
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 import checkObjectId from '../middleware/checkObjectId.js';
+import Product from '../models/productModel.js';
+import advancedResults from '../middleware/advancedResults.js';
 
-router.route('/').get(getProducts).post(protect, admin, createProduct);
+router
+  .route('/')
+  .get(advancedResults(Product, 'user'), getProducts)
+  .post(protect, createProduct);
 router.route('/category').get(getCategory);
 router.route('/:id/reviews').post(protect, checkObjectId, createProductReview);
 router.get('/top', getTopProducts);

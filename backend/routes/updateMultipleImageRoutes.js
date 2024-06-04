@@ -28,14 +28,14 @@ const updateMultipleImage = asyncHandler(async (req, res) => {
         });
       }
     });
-    // let originalImg = imageAddress.replace('comp', '');
-    // fs.unlink(path.join(__dirname + originalImg), (err) => {
-    //   if (err) {
-    //     console.log(err.message);
-    //     // res.status(404).json(new Error('Unable to delete history image'));
-    //   } else {
-    //   }
-    // });
+    let originalImg = imageAddress.replace('comp', '');
+    fs.unlink(path.join(__dirname + originalImg), (err) => {
+      if (err) {
+        console.log(err.message);
+        // res.status(404).json(new Error('Unable to delete history image'));
+      } else {
+      }
+    });
     res.json({ message: 'History product image removed' });
     // fs.unlink(path.join(__dirname + product.image), (err) => {
     //   if (err) {

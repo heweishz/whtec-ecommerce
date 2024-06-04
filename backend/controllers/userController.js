@@ -264,6 +264,23 @@ const sendNavigator = asyncHandler(async (req, res) => {
   console.log(req.body.environment);
   res.json({ suceed: true });
 });
+// @desc    Get products by UserID
+// @route   GET /api/users/:id/products
+// @access  Public
+const getUserProducts = asyncHandler(async (req, res) => {
+  // NOTE: checking for valid ObjectId to prevent CastError moved to separate
+  // middleware. See README for more info.
+  const product = await Product.findById(req.params.id).populate('user');
+  if (product) {
+    console.log(product, '<<getProductById<<');
+    return res.json(product);
+  } else {
+    // NOTE: this will run if a valid ObjectId but no product was found
+    // i.e. product may be null
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
 
 export {
   authUser,
@@ -281,4 +298,5 @@ export {
   aliLogin,
   aliUserInfo,
   sendNavigator,
+  getUserProducts,
 };
