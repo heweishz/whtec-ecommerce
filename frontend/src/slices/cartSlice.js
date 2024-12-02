@@ -3,7 +3,18 @@ import { updateCart } from '../utils/cartUtils';
 
 const initialState = localStorage.getItem('cart')
   ? JSON.parse(localStorage.getItem('cart'))
-  : { cartItems: [], shippingAddress: {}, paymentMethod: 'uncertain' };
+  : {
+      cartItems: [],
+      shippingAddress: {
+        city: 'undefined',
+        country: 'undefined',
+        address: 'undefined',
+        phone: 'undefined',
+        postalCode: 'undefined',
+      },
+      paymentMethod: 'uncertain',
+      tableNumber: '',
+    };
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -59,7 +70,17 @@ const cartSlice = createSlice({
     },
     // NOTE: here we need to reset state for when a user logs out so the next
     // user doesn't inherit the previous users cart and shipping
-    resetCart: (state) => (state = initialState),
+    resetCart: (state) => {
+      state.cartItems = initialState.cartItems;
+      state.shippingAddress = initialState.shippingAddress;
+      state.paymentMethod = initialState.paymentMethod;
+      state.tableNumber = initialState.tableNumber;
+      localStorage.setItem('cart', JSON.stringify(state));
+    },
+    addTableNumber: (state, action) => {
+      state.tableNumber = action.payload;
+      localStorage.setItem('cart', JSON.stringify(state));
+    },
   },
 });
 
@@ -71,6 +92,7 @@ export const {
   savePaymentMethod,
   clearCartItems,
   resetCart,
+  addTableNumber,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -61,6 +61,13 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: 'PUT',
       }),
     }),
+    roulette: builder.mutation({
+      query: (data) => ({
+        url: `${ORDERS_URL}/${data.orderId}/roulette`,
+        method: 'PUT',
+        body: data,
+      }),
+    }),
     payMethod: builder.mutation({
       query: (data) => ({
         url: `${ORDERS_URL}/${data.orderId}/payMethod`,
@@ -81,5 +88,6 @@ export const {
   useGetMyOrdersQuery,
   useGetOrdersQuery,
   useDeliverOrderMutation,
+  useRouletteMutation,
   usePayMethodMutation,
 } = orderApiSlice;

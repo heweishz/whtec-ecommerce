@@ -10,7 +10,6 @@ import AlipayFormData from 'alipay-sdk/lib/form.js';
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
   const { orderItems, shippingAddress, paymentMethod, tableNumber } = req.body;
-
   if (orderItems && orderItems.length === 0) {
     res.status(400);
     throw new Error('No order items');
@@ -63,7 +62,9 @@ const addOrderItems = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id }).sort({
+    updatedAt: -1,
+  });
   orders.forEach((order) => {
     order._doc.createdAt = order._doc.createdAt.toLocaleString();
     if (order._doc.paidAt) {
@@ -252,16 +253,19 @@ const updateOrderToPaidMobileBackup = asyncHandler(async (req, res) => {
 const wxGZHPayment = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
   if (order) {
-    let totalPrice = order.totalPrice * 100;
+    let totalPrice = Math.round(order.totalPrice * 100).toFixed(0);
+
     //calculate price with discount
     if (req.body.matchCode) {
       totalPrice =
         (Math.round(order.totalPrice * 100 * 0.95) / 100).toFixed(2) * 100;
     }
     //generate name list of commodity
-    const subject = order.orderItems.reduce((a, c) => {
-      return a + ' ' + c.name;
-    }, '商品：');
+    const subject = order.orderItems
+      .reduce((a, c) => {
+        return a + ' ' + c.name;
+      }, '商品：')
+      .slice(0, 16);
     //invoke alipay
 
     res.json({
@@ -294,12 +298,32 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
     throw new Error('Order not found');
   }
 });
+// @desc    Update order to delivered
+// @route   PUT /api/orders/:id/deliver
+// @access  Private/Admin
+const updateRoulette = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  console.log(req.params.id, '<<Roulette<<');
+  console.log(req.body, '<<req.body of updateRoulette');
+
+  if (order) {
+    order.attachment = req.body.attachment;
+    await order.save();
+
+    res.json({ success: true });
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
 
 // @desc    Get all orders
 // @route   GET /api/orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name');
+  const orders = await Order.find({})
+    .populate('user', 'id name')
+    .sort('-createdAt');
   orders.forEach((order) => {
     order._doc.createdAt = order._doc.createdAt.toLocaleString();
     if (order._doc.paidAt) {
@@ -333,4 +357,5 @@ export {
   updateOrderToDelivered,
   getOrders,
   updateOrderPayMethod,
+  updateRoulette,
 };

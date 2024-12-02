@@ -124,6 +124,9 @@ const orderSchema = mongoose.Schema(
     deliveredAt: {
       type: Date,
     },
+    attachment: {
+      type: String,
+    },
   },
   {
     timestamps: true,

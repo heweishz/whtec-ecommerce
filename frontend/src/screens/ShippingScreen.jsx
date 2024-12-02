@@ -12,21 +12,42 @@ import {
 import { savePaymentMethod } from '../slices/cartSlice';
 import { useCreateOrderMutation } from '../slices/ordersApiSlice';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import { useLogoutMutation } from '../slices/usersApiSlice';
+import { logout } from '../slices/authSlice';
+
 const ShippingScreen = () => {
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
 
-  const [address, setAddress] = useState(shippingAddress.address || '建议留');
+  const [address, setAddress] = useState(
+    shippingAddress.address || '如外卖，请留地址'
+  );
   const [city, setCity] = useState(shippingAddress.city || '忽略');
   const [postalCode, setPostalCode] = useState(
     shippingAddress.postalCode || '忽略'
   );
   const [country, setCountry] = useState(shippingAddress.country || '忽略');
-  const [phone, setPhone] = useState(shippingAddress.phone || '建议留');
+  const [phone, setPhone] = useState(
+    shippingAddress.phone || '如外卖，请留电话'
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [logoutApiCall] = useLogoutMutation();
+
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      // NOTE: here we need to reset cart state for when a user logs out so the next
+      // user doesn't inherit the previous users cart and shipping
+      dispatch(resetCart());
+      dispatch(clearCartItems());
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const placeOrderHandler = async () => {
     let cartEdited = JSON.parse(localStorage.getItem('cart'));
     try {
@@ -40,24 +61,26 @@ const ShippingScreen = () => {
         totalPrice: cartEdited.totalPrice,
         tableNumber: localStorage.getItem('tableNumber'),
       }).unwrap();
-      dispatch(resetCart());
+
+      // dispatch(resetCart());
       dispatch(clearCartItems());
       // if (res.shippingAddress?.address) {
       //   navigate(`/order/${res._id}`);
       // }
-      setTimeout(navigate(`/order/${res._id}`), [300]);
+      setTimeout((window.location.href = `/order/${res._id}`), [300]);
     } catch (err) {
-      toast.error(err);
+      console.log(err.status);
+      toast.error(err.data.message);
+      logoutHandler();
     }
   };
-  const sendNavigator = async (signal) => {
-    await axios.post('/api/users/sendNavigator', {
-      environment: `${navigator.userAgent}--${signal}`,
-    });
-  };
+  // const sendNavigator = async (signal) => {
+  //   await axios.post('/api/users/sendNavigator', {
+  //     environment: `${navigator.userAgent}--${signal}`,
+  //   });
+  // };
   const submitHandler = (e) => {
     e.preventDefault();
-    sendNavigator(address);
     dispatch(
       saveShippingAddress({ address, city, postalCode, country, phone })
     );

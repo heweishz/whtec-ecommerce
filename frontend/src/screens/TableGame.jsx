@@ -16,7 +16,6 @@ import {
 } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import wx from 'weixin-js-sdk';
-console.log(wx, 'wx object<<');
 
 const socket = io(process.env.REACT_APP_SOCKET_CONNECTION); // Use your actual domain
 

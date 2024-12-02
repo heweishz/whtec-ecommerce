@@ -12,8 +12,8 @@ const PannellumScreen = ({ image }) => {
           width='100%'
           height='500px'
           image={image}
-          pitch={-13}
-          yaw={33}
+          pitch={-2.1}
+          yaw={-133}
           hfov={110}
           autoLoad
           showZoomCtrl={false}
@@ -26,29 +26,29 @@ const PannellumScreen = ({ image }) => {
           <Pannellum.Hotspot
             type='info'
             text='饮料'
-            pitch={-2.3}
-            yaw={-3.5}
+            pitch={-1.0}
+            yaw={-166}
             // handleClick={(evt, name) => redirectToProduct()}
             // name='hs1'
-            URL={`${window.location.origin}/category/饮料`}
+            URL={`${window.location.origin}?table=13`}
           />
           <Pannellum.Hotspot
             type='info'
             text='卤味'
-            pitch={-15}
-            yaw={71}
+            pitch={-18.8}
+            yaw={-123.8}
             // handleClick={(evt, name) => redirectToProduct()}
             // name='hs1'
-            URL={`${window.location.origin}/category/卤味`}
+            URL={`${window.location.origin}?table=20`}
           />
           <Pannellum.Hotspot
             type='info'
             text='结算'
-            pitch={-7.8}
-            yaw={50.1}
+            pitch={-2.6}
+            yaw={-105.5}
             // handleClick={(evt, name) => redirectToProduct()}
             // name='hs1'
-            URL={`${window.location.origin}/cart`}
+            URL={`${window.location.origin}?table=8`}
           />
         </Pannellum>
       </div>

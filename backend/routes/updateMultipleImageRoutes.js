@@ -62,5 +62,5 @@ const updateMultipleImage = asyncHandler(async (req, res) => {
   }
 });
 // router.route('/:id').put(updateMultipleImage);
-router.route('/:id').put(protect, admin, checkObjectId, updateMultipleImage);
+router.route('/:id').put(protect, checkObjectId, updateMultipleImage);
 export default router;

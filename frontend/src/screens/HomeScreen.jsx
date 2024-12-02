@@ -1,4 +1,4 @@
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Col, Container, Button } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
 import { Link } from 'react-router-dom';
@@ -11,6 +11,7 @@ import Meta from '../components/Meta';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { setCredentials } from '../slices/authSlice';
+import { setProductsSort } from '../slices/productsSortSlice';
 import { useEffect } from 'react';
 import { useLoginMutation } from '../slices/usersApiSlice';
 import { toast } from 'react-toastify';
@@ -19,20 +20,29 @@ import NavbarCategory from './NavbarCategory';
 import wx from 'weixin-js-sdk';
 import axios from 'axios';
 import PannellumScreen from '../components/PannellumScreen';
-import panorama from '../assets/yizhanConvinence.jpg';
+import panorama from '../assets/jinlinercamp.jpg';
 
+const isAndroid = () => /Android/i.test(navigator.userAgent);
 const HomeScreen = () => {
+  const dispatch = useDispatch();
+
+  const changeSort = (e) => {
+    dispatch(setProductsSort(e.target.value));
+  };
+  const { productsSort } = useSelector((state) => state.sort);
   const language = localStorage.getItem('language');
   const { pageNumber, keyword, category } = useParams();
+  const sort = productsSort;
   const { data, isLoading, error } = useGetProductsQuery({
     keyword,
     category,
     pageNumber,
+    sort,
+    filterStock: true,
   });
 
   const [login, { isLoadingUser }] = useLoginMutation();
   const { userInfo } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
 
   const wechatConfig = async () => {
     console.log('wechatConfig inner <<<<<<');
@@ -50,19 +60,19 @@ const HomeScreen = () => {
           success: function (res) {},
         });
         wx.updateTimelineShareData({
-          title: '桅梁科技商城', // 分享标题
+          title: '花火烧烤', // 分享标题
           link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-          imgUrl: 'https://buyifang.whtec.net/images/tableGame.png', // 分享图标
+          imgUrl: 'https://buyifang.whtec.net/images/bbq.jpg', // 分享图标
           success: function () {
             // 设置成功
             console.log('updateTimeLineShareData set success');
           },
         });
         wx.updateAppMessageShareData({
-          title: '桅梁科技商城', // 分享标题
-          desc: '桌面游戏',
+          title: '花火烧烤', // 分享标题
+          desc: '老东北味道',
           link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-          imgUrl: `${window.location.origin}/images/tableGame.png`, // 分享图标
+          imgUrl: `${window.location.origin}/images/bbq.jpg`, // 分享图标
           success: function () {
             // sendNavigator('messageShare');
             // 设置成功
@@ -108,16 +118,20 @@ const HomeScreen = () => {
   return (
     <>
       {!keyword && !category ? (
-        // <ProductCarousel />
-        <Container>
-          <Row>
-            <Col xs={1}></Col>
-            <Col xs={10}>
-              <PannellumScreen image={panorama} fluid />
-            </Col>
-            <Col xs={1}></Col>
-          </Row>
-        </Container>
+        isAndroid() ? (
+          <ProductCarousel />
+        ) : (
+          // <ProductCarousel />
+          <Container>
+            <Row>
+              <Col xs={1}></Col>
+              <Col xs={10}>
+                <PannellumScreen image={panorama} fluid />
+              </Col>
+              <Col xs={1}></Col>
+            </Row>
+          </Container>
+        )
       ) : (
         <Link to='/' className='btn btn-light mb-4'>
           {process.env.REACT_APP_CHINESE ? '返回' : 'Go Back'}
@@ -135,15 +149,33 @@ const HomeScreen = () => {
           <h1>
             {process.env.REACT_APP_CHINESE ? '最新商品' : 'Latest Products'}
           </h1>
+
           <Row>
             <NavbarCategory
               pages={data.pages}
               page={data.page}
               keyword={keyword ? keyword : ''}
             />
+          </Row>
+          <Row>
+            <Col>
+              <Button value='name' onClick={(e) => changeSort(e)}>
+                名字排序
+              </Button>
+              <Button value='-updatedAt' onClick={(e) => changeSort(e)}>
+                上新排序
+              </Button>
+            </Col>
+          </Row>
+          <Row>
             {data.products.map((product) => (
               <Col key={product._id} xs={6} sm={6} md={6} lg={4} xl={3}>
-                <Product product={product} />
+                {product.image &&
+                product.image.toLowerCase().endsWith('.mp4') ? (
+                  <Product product={product} isVideo={true} />
+                ) : (
+                  <Product product={product} />
+                )}
               </Col>
             ))}
           </Row>

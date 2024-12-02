@@ -29,6 +29,9 @@ import gsap from 'gsap';
 import wx from 'weixin-js-sdk';
 import axios from 'axios';
 import PannellumScreen from '../components/PannellumScreen';
+import ModalPicture from '../components/ModalPicture';
+import { LinkContainer } from 'react-router-bootstrap';
+import { FaEdit } from 'react-icons/fa';
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
@@ -39,6 +42,13 @@ const ProductScreen = () => {
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+
+  const {
+    data: product,
+    isLoading,
+    refetch,
+    error,
+  } = useGetProductDetailsQuery(productId);
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
@@ -53,13 +63,6 @@ const ProductScreen = () => {
       ease: 'bounce.in',
     });
   };
-  const {
-    data: product,
-    isLoading,
-    refetch,
-    error,
-  } = useGetProductDetailsQuery(productId);
-
   const { userInfo } = useSelector((state) => state.auth);
 
   const [createReview, { isLoading: loadingProductReview }] =
@@ -119,13 +122,12 @@ const ProductScreen = () => {
             // console.log(navigator.userAgent, 'getSysteminfoSync');
             // alert(navigator.userAgent.indexOf('Android'));
             localStorage.setItem('wxConfig', 'true');
-            sendNavigator('checkJsApi');
           },
         });
         wx.updateTimelineShareData({
           title: product.name, // 分享标题
           link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-          imgUrl: `${window.location.origin}${product.image}`, // 分享图标
+          imgUrl: `${window.location.origin}${product.imageDesc[0]}`, // 分享图标
           success: function () {
             // sendNavigator(`${window.location.origin}${product.image}`);
             // 设置成功
@@ -135,7 +137,7 @@ const ProductScreen = () => {
           title: product.name, // 分享标题
           desc: product.description,
           link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-          imgUrl: `${window.location.origin}${product.image}`, // 分享图标
+          imgUrl: `${window.location.origin}${product.imageDesc[0]}`, // 分享图标
           success: function () {
             // sendNavigator('messageShare');
             // 设置成功
@@ -181,7 +183,20 @@ const ProductScreen = () => {
           <Meta title={product.name} description={product.description} />
           <Row>
             <Col md={6}>
-              <Image src={product.image} alt={product.name} fluid />
+              {product.image && product.image.toLowerCase().endsWith('.mp4') ? (
+                <video controls style={{ width: '100%', borderRadius: '8px' }}>
+                  <source src={product.image} type='video/mp4' />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  style={{ borderRadius: '8px' }}
+                  fluid
+                />
+              )}
+
               {/* <PannellumScreen image={product.image} /> */}
             </Col>
             <Col md={3}>
@@ -317,6 +332,17 @@ const ProductScreen = () => {
                         : 'Add To Cart'}
                     </Button>
                   </ListGroup.Item>
+                  <ListGroup.Item>
+                    {userInfo && userInfo.isAdmin ? (
+                      <LinkContainer to={`/admin/product/${product._id}/edit`}>
+                        <Col>
+                          <Button variant='danger' className='btn-sm mx-2'>
+                            <FaEdit />
+                          </Button>
+                        </Col>
+                      </LinkContainer>
+                    ) : null}
+                  </ListGroup.Item>
                 </ListGroup>
               </Card>
             </Col>
@@ -428,7 +454,8 @@ const ProductScreen = () => {
             {product.imageDesc?.map((img, index) => {
               return (
                 <Col key={index} md={6} sm={6} xs={6}>
-                  <Image src={img} alt={img} fluid className='rounded' />
+                  {/* <Image src={img} alt={img} fluid className='rounded' /> */}
+                  <ModalPicture img={img} />
                 </Col>
               );
             })}

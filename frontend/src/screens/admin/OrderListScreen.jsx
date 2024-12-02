@@ -41,7 +41,7 @@ const OrderListScreen = () => {
               <th>{process.env.REACT_APP_CHINESE ? '日期' : 'DATA'}</th>
               <th>{process.env.REACT_APP_CHINESE ? '总价' : 'TOTAL'}</th>
               <th>{process.env.REACT_APP_CHINESE ? '是否付款' : 'PAID'}</th>
-              <th>{process.env.REACT_APP_CHINESE ? '发起退款' : 'REFUND'}</th>
+              <th>{process.env.REACT_APP_CHINESE ? '退款' : 'REFUND'}</th>
               <th>{process.env.REACT_APP_CHINESE ? '送达' : 'DELIVERD'}</th>
               <th></th>
             </tr>

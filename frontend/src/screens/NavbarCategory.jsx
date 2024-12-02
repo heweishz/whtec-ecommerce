@@ -13,10 +13,11 @@ import {
   useVerifyEmailQuery,
 } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
+import { addTableNumber } from '../slices/cartSlice';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
+import roulette from '../assets/roulette.webp';
 const NavbarCategory = ({ pages, page, keyword = '' }) => {
   let url = encodeURIComponent(window.location.href.split('#')[0]);
   const [login, { isLoadingUser }] = useLoginMutation();
@@ -30,6 +31,10 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
   const locationURL = new URLSearchParams(location.search);
   const codeWechat = locationURL.get('code');
   const tableNumber = locationURL.get('table');
+
+  if (tableNumber) {
+    dispatch(addTableNumber(tableNumber));
+  }
   if (tableNumber) {
     localStorage.setItem('tableNumber', tableNumber);
   }
@@ -284,6 +289,9 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
   const tableGame = async () => {
     navigate(`/tableGame`);
   };
+  const spinWheel = async () => {
+    navigate(`/spinWheel`);
+  };
   useEffect(() => {
     let surfModel = navigator.userAgent;
     if (surfModel.toLowerCase().match(/micromessenger/i) == 'micromessenger') {
@@ -365,9 +373,7 @@ const NavbarCategory = ({ pages, page, keyword = '' }) => {
       <Button onClick={sendNavigator} style={{ display: 'none' }}>
         userAgent
       </Button>
-      <Button onClick={tableGame} style={{ display: 'block' }}>
-        桌游计分
-      </Button>
+      <img onClick={spinWheel} src={roulette} alt='ProShop' width={80} />
     </Pagination>
   );
 };

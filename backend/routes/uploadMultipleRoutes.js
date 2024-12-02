@@ -36,7 +36,7 @@ const upload = multer({ storage, fileFilter });
 const uploadMultipleImage = upload.array('images');
 // const uploadSingleImage = upload.single('image');
 
-router.post('/', protect, admin, (req, res) => {
+router.post('/', protect, (req, res) => {
   uploadMultipleImage(req, res, function (err) {
     if (err) {
       return res.status(400).send({ message: err.message });

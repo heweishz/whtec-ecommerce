@@ -192,6 +192,12 @@ const OrderScreen = () => {
         })
       ).data;
       await payMethod({ orderId, payment: '微信支付' });
+      // const sendNavigator = async (signal) => {
+      //   await axios.post('/api/users/sendNavigator', {
+      //     environment: `${navigator.userAgent}--${Date.now()}--${signal}`,
+      //   });
+      // };
+      // sendNavigator(JSON.stringify(result));
       /* eslint-disable */
       WeixinJSBridge.invoke('getBrandWCPayRequest', result, function (res) {
         if (res.err_msg == 'get_brand_wcpay_request:ok') {
@@ -245,19 +251,20 @@ const OrderScreen = () => {
         return orderID;
       });
   }
-  async function sendNavigator(signal) {
-    await axios.post('/api/users/sendNavigator', {
-      environment: `${navigator.userAgent}--${Date.now()}--${signal}`,
-    });
-  }
+  // async function sendNavigator(signal) {
+  //   await axios.post('/api/users/sendNavigator', {
+  //     environment: `${navigator.userAgent}--${Date.now()}--${signal}`,
+  //   });
+  // }
   const scanCode = () => {
-    sendNavigator('scanCode');
+    // sendNavigator('scanCode');
     wx.scanQRCode({
       needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
       scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
       success: async function (res) {
         var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-        sendNavigator(result);
+        console.log(result, '<<scanCode result<<<');
+        // sendNavigator(result);
         await axios.get(
           `/api/payment/testEmptyObject?auth_code=${result}&orderId=${order._id}`
         );
@@ -383,17 +390,18 @@ const OrderScreen = () => {
                     <ListGroup.Item key={index}>
                       <Row>
                         <Col md={1}>
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            fluid
-                            rounded
-                          />
+                          <Link to={`/product/${item.product}`}>
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              fluid
+                              rounded
+                            />
+                          </Link>
                         </Col>
                         <Col>
-                          <Link to={`/product/${item.product}`}>
-                            {item.name}
-                          </Link>
+                          {`${item.name}  
+                            ${order.attachment}`}
                         </Col>
                         <Col md={4}>
                           {item.qty} x{' '}

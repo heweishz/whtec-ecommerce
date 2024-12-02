@@ -88,22 +88,40 @@ const getProductById = asyncHandler(async (req, res) => {
     throw new Error('Product not found');
   }
 });
+// @desc    Fetch product by userId
+// @route   GET /api/products/
+// @access  Private
+const getProductByUserId = asyncHandler(async (req, res) => {
+  const products = await Product.find({ user: req.user._id }).sort({
+    updatedAt: -1,
+  });
+  if (products) {
+    res.status(200).json({
+      products,
+    });
+  } else {
+    // NOTE: this will run if a valid ObjectId but no product was found
+    // i.e. product may be null
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
 
 // @desc    Create a product
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
   const product = new Product({
-    name: 'Sample name',
+    name: '待编辑新品',
     price: 0,
     user: req.user._id,
     image: '/images/sample.jpg',
     imageDesc: [],
-    brand: '桅梁科技有限公司',
-    category: '其它',
+    brand: 'taps酒吧',
+    category: '烧烤类',
     countInStock: 999,
     numReviews: 0,
-    description: '商口描述',
+    description: '爽口小食',
   });
   const createdProduct = await product.save();
   res.status(201).json(createdProduct);
@@ -212,6 +230,7 @@ export {
   getProducts,
   getCategory,
   getProductById,
+  getProductByUserId,
   createProduct,
   updateProduct,
   deleteProduct,

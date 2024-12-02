@@ -10,14 +10,22 @@ import {
   useDeleteProductMutation,
   useCreateProductMutation,
 } from '../../slices/productsApiSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { setProductsSort } from '../../slices/productsSortSlice';
 import { toast } from 'react-toastify';
 
 const ProductListScreen = () => {
   const { pageNumber } = useParams();
-
+  const dispatch = useDispatch();
+  const { productsSort } = useSelector((state) => state.sort);
+  let sort = productsSort;
   const { data, isLoading, error, refetch } = useGetProductsQuery({
     pageNumber,
+    sort,
   });
+  const changeSort = (e) => {
+    dispatch(setProductsSort(e.target.value));
+  };
 
   const [deleteProduct, { isLoading: loadingDelete }] =
     useDeleteProductMutation();
@@ -67,6 +75,16 @@ const ProductListScreen = () => {
         </Col>
       </Row>
 
+      <Row>
+        <Col>
+          <Button value='name' onClick={(e) => changeSort(e)}>
+            名字排序
+          </Button>
+          <Button value='-updatedAt' onClick={(e) => changeSort(e)}>
+            上新排序
+          </Button>
+        </Col>
+      </Row>
       {loadingCreate && <Loader />}
       {loadingDelete && <Loader />}
       {isLoading ? (

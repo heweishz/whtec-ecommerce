@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
+  const { tableNumber } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
   // const [switchLanguageSignal, setSwitchLanguageSignal] = useState(true);
   const dispatch = useDispatch();
@@ -64,7 +65,7 @@ const Header = () => {
               ) : (
                 <img src={logo} alt='ProShop' width={30} />
               )}
-              桅梁科技商城
+              {tableNumber ? tableNumber + '号桌位' : 'taps酒吧'}
             </Navbar.Brand>
           </LinkContainer>
           <LinkContainer to='/cart'>

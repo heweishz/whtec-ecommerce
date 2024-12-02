@@ -65,7 +65,7 @@ const ProductEditScreen = () => {
       }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success('Product updated');
       refetch();
-      navigate('/admin/productlist');
+      navigate(-1);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -281,8 +281,10 @@ const ProductEditScreen = () => {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value='饮料'>饮料</option>
-                <option value='卤味'>卤味</option>
+                <option value='酒水类'>酒水类</option>
+                <option value='烧烤类'>烧烤类</option>
+                <option value='卤煮类'>卤煮类</option>
+                <option value='烟草类'>烟草类</option>
                 <option value='其它'>其它</option>
               </Form.Control>
             </Form.Group>

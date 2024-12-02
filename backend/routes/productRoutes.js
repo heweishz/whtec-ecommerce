@@ -4,6 +4,7 @@ import {
   getProducts,
   getCategory,
   getProductById,
+  getProductByUserId,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -20,13 +21,14 @@ router
   .get(advancedResults(Product, 'user'), getProducts)
   .post(protect, createProduct);
 router.route('/category').get(getCategory);
+router.route('/user').get(protect, getProductByUserId);
 router.route('/:id/reviews').post(protect, checkObjectId, createProductReview);
 router.get('/top', getTopProducts);
 router
   .route('/:id')
   .get(checkObjectId, getProductById)
   // .put(updateProduct)
-  .put(protect, admin, checkObjectId, updateProduct)
+  .put(protect, checkObjectId, updateProduct)
   .delete(protect, admin, checkObjectId, deleteProduct);
 
 export default router;
